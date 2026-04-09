@@ -1,10 +1,18 @@
 /**
  * components/FollowUpInput.js
- * Dumb component. All config values from props. Never imports config.
  */
 'use client';
 
 import { useState } from 'react';
+
+function SearchIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
 
 export default function FollowUpInput({ onSubmit, isDisabled, hasConversation, followUpPlaceholder, freshPlaceholder, maxLength }) {
   var [value, setValue] = useState('');
@@ -21,6 +29,7 @@ export default function FollowUpInput({ onSubmit, isDisabled, hasConversation, f
 
   return (
     <form className="px-followup" onSubmit={handleSubmit}>
+      <span className="px-followup-icon"><SearchIcon /></span>
       <input type="text" value={value} onChange={function (e) { setValue(e.target.value); }}
         placeholder={placeholder} className="px-followup-input"
         maxLength={maxLength || undefined} />

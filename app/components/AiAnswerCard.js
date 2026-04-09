@@ -6,23 +6,30 @@
 
 import MarkdownRenderer from './MarkdownRenderer';
 import SmoothStreamingText from './SmoothStreamingText';
+import ThinkingIndicator from './ThinkingIndicator';
 
 export default function AiAnswerCard({
-  answer, sources, isStreaming,
+  answer, sources, isStreaming, isThinking,
   label, query, streamingLabel, sourcesLabel, diveButtonText,
   showDiveCta, onDiveDeeper,
 }) {
-  var sourcesText = (sourcesLabel || '{count} sources').replace('{count}', (sources || []).length);
+  var sourcesText = (sourcesLabel || 'Sources').replace('{count}', (sources || []).length);
 
   return (
     <div className={'px-answer-card' + (query ? ' px-initial-answer' : '')}>
       <div className="px-answer-label">
         {label || 'AI Answer'}
         {query && <> for: <strong>{query}</strong></>}
-        {isStreaming && <span className="px-streaming-badge">{streamingLabel || 'Streaming...'}</span>}
+        {(isStreaming || isThinking) && <span className="px-streaming-badge">{streamingLabel || 'Thinking...'}</span>}
       </div>
-      {isStreaming ? <SmoothStreamingText content={answer} isStreaming={isStreaming} /> : <MarkdownRenderer content={answer} />}
-      {!isStreaming && sources && sources.length > 0 && (
+      {isStreaming ? (
+        <SmoothStreamingText content={answer} isStreaming={isStreaming} />
+      ) : isThinking ? (
+        <ThinkingIndicator compact={true} label={streamingLabel || 'Thinking...'} />
+      ) : (
+        <MarkdownRenderer content={answer} />
+      )}
+      {!isStreaming && !isThinking && sources && sources.length > 0 && (
         <div className="px-sources">
           <p className="px-sources-label">{sourcesText}</p>
           <div className="px-sources-row">
@@ -32,7 +39,7 @@ export default function AiAnswerCard({
           </div>
         </div>
       )}
-      {showDiveCta && !isStreaming && (
+      {showDiveCta && !isStreaming && !isThinking && (
         <button className="px-dive-cta" onClick={onDiveDeeper}>{diveButtonText || 'Dive Deeper →'}</button>
       )}
     </div>

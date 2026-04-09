@@ -495,7 +495,8 @@ function WorkspaceApp({ config }) {
                   isLoading={orchState.followUpLoading}
                   isStreaming={orchState.followUpStreaming}
                   streamingText={orchState.streamingText}
-                  streamingLabel={labels.aiAnswerStreaming}
+                  streamingLabel={'Thinking...'}
+                  sourcesLabel={'Sources'}
                 />
               ) : (
                 <div className="ws-ai-empty">
@@ -507,7 +508,7 @@ function WorkspaceApp({ config }) {
             {/* Next actions — sticky at bottom of right panel */}
             <div className="ws-right-footer">
               {!orchState.followUpLoading && !orchState.followUpStreaming && (
-                <div className="ws-next-actions">
+                <div className="ws-next-actions ws-next-actions-emphasis">
                   <span className="ws-next-label">Next steps</span>
                   <div className="ws-next-btns">
                     {hasConversation && (
@@ -539,7 +540,7 @@ function WorkspaceApp({ config }) {
               )}
 
               {/* Input */}
-              <div className="ws-convo-input">
+              <div className="ws-convo-input ws-convo-input-emphasis">
                 <FollowUpInput
                   onSubmit={sendWithContext}
                   isDisabled={orchState.followUpLoading || orchState.followUpStreaming}
@@ -556,7 +557,7 @@ function WorkspaceApp({ config }) {
 
       {/* Footer */}
       <footer className="px-footer" style={{ borderTop: '1px solid var(--border)' }}>
-        <p>{labels.footerText} <a href={labels.footerBrandUrl} target="_blank" rel="noopener noreferrer">{labels.footerBrand}</a> {labels.footerTagline}</p>
+        <p><a href={labels.footerBrandUrl} target="_blank" rel="noopener noreferrer">Powered by AddSearch</a></p>
       </footer>
     </main>
   );

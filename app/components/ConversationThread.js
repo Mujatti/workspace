@@ -7,9 +7,9 @@
 import { useEffect, useRef } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
 import SmoothStreamingText from './SmoothStreamingText';
-import LoadingDots from './LoadingDots';
+import ThinkingIndicator from './ThinkingIndicator';
 
-export default function ConversationThread({ messages, isLoading, isStreaming, streamingText, streamingLabel }) {
+export default function ConversationThread({ messages, isLoading, isStreaming, streamingText, streamingLabel, sourcesLabel }) {
   var lastQuestionRef = useRef(null);
 
   var lastUserIdx = -1;
@@ -36,11 +36,14 @@ export default function ConversationThread({ messages, isLoading, isStreaming, s
               <div className="px-answer-card">
                 <MarkdownRenderer content={msg.text} />
                 {msg.sources && msg.sources.length > 0 && (
-                  <div className="px-sources"><div className="px-sources-row">
-                    {msg.sources.map(function (s, j) {
-                      return <a key={j} className="px-source" href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a>;
-                    })}
-                  </div></div>
+                  <div className="px-sources">
+                    <p className="px-sources-label">{sourcesLabel || 'Sources'}</p>
+                    <div className="px-sources-row">
+                      {msg.sources.map(function (s, j) {
+                        return <a key={j} className="px-source" href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a>;
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -48,17 +51,17 @@ export default function ConversationThread({ messages, isLoading, isStreaming, s
         );
       })}
 
-      {isStreaming && streamingText && (
+      {(isLoading || isStreaming) && (
         <div className="px-answer-card">
           <div className="px-answer-label">
-            <span className="px-streaming-badge">{streamingLabel || 'Streaming...'}</span>
+            <span className="px-streaming-badge">{streamingLabel || 'Thinking...'}</span>
           </div>
-          <SmoothStreamingText content={streamingText} isStreaming={isStreaming} />
+          {isStreaming && streamingText ? (
+            <SmoothStreamingText content={streamingText} isStreaming={isStreaming} />
+          ) : (
+            <ThinkingIndicator compact={true} label={streamingLabel || 'Thinking...'} />
+          )}
         </div>
-      )}
-
-      {isLoading && !isStreaming && (
-        <div style={{ padding: '20px 0' }}><LoadingDots /></div>
       )}
     </>
   );

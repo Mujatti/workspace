@@ -10,6 +10,35 @@
 
 import { useMemo } from 'react';
 
+export function sanitizeStreamingMarkdown(md) {
+  if (!md) return '';
+  if (typeof md !== 'string') md = String(md);
+
+  var out = md;
+
+  if ((out.match(/```/g) || []).length % 2 === 1) {
+    out = out.replace(/```([^`]*)$/, '$1');
+  }
+
+  if ((out.match(/\*\*/g) || []).length % 2 === 1) {
+    var idx = out.lastIndexOf('**');
+    if (idx >= 0) out = out.slice(0, idx) + out.slice(idx + 2);
+  }
+
+  if ((out.match(/__/g) || []).length % 2 === 1) {
+    var idx2 = out.lastIndexOf('__');
+    if (idx2 >= 0) out = out.slice(0, idx2) + out.slice(idx2 + 2);
+  }
+
+  if ((out.match(/`/g) || []).length % 2 === 1) {
+    var idx3 = out.lastIndexOf('`');
+    if (idx3 >= 0) out = out.slice(0, idx3) + out.slice(idx3 + 1);
+  }
+
+  return out;
+}
+
+
 /**
  * Convert markdown string to HTML.
  * Uses window.marked if available, otherwise a lightweight fallback.

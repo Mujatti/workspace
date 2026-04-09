@@ -1,17 +1,16 @@
 /**
  * components/SmoothStreamingText.js
- *
- * Makes streaming feel smoother by revealing the latest accumulated text
- * over animation frames. This avoids reparsing markdown on every token.
+ * Smoothly reveals accumulated text while still rendering markdown-like formatting.
  */
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import MarkdownRenderer, { sanitizeStreamingMarkdown } from './MarkdownRenderer';
 
 export default function SmoothStreamingText({ content, isStreaming, className }) {
   var targetRef = useRef(content || '');
   var rafRef = useRef(null);
-  var [displayed, setDisplayed] = useState(content || '');
+  var [displayed, setDisplayed] = useState('');
 
   useEffect(function () {
     targetRef.current = content || '';
@@ -28,25 +27,18 @@ export default function SmoothStreamingText({ content, isStreaming, className })
     function tick() {
       setDisplayed(function (prev) {
         var target = targetRef.current;
-        if (prev.length >= target.length) {
-          return prev;
-        }
-
+        if (prev.length >= target.length) return prev;
         var remaining = target.length - prev.length;
-        var step = remaining > 120 ? 12 : remaining > 60 ? 8 : remaining > 24 ? 5 : 3;
+        var step = remaining > 160 ? 14 : remaining > 80 ? 10 : remaining > 32 ? 6 : 3;
         return target.slice(0, prev.length + step);
       });
 
       rafRef.current = requestAnimationFrame(function () {
-        if (targetRef.current.length > 0) {
-          tick();
-        }
+        if (displayed !== targetRef.current || targetRef.current.length > 0) tick();
       });
     }
 
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(tick);
-    }
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
 
     return function () {
       if (rafRef.current && !isStreaming) {
@@ -58,17 +50,11 @@ export default function SmoothStreamingText({ content, isStreaming, className })
 
   useEffect(function () {
     return function () {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   if (!displayed) return null;
 
-  return (
-    <div className={'md-content px-streaming-text' + (className ? ' ' + className : '')}>
-      {displayed}
-    </div>
-  );
+  return <MarkdownRenderer content={sanitizeStreamingMarkdown(displayed)} className={'px-streaming-text' + (className ? ' ' + className : '')} />;
 }
