@@ -1,14 +1,3 @@
-/**
- * app/api/proxy/refineQuery/route.js
- *
- * Proxy for AddSearch AI Conversations refine-query endpoint.
- *
- * Site key resolution order:
- *   1. request body siteKey (runtime override, e.g. ?site_key=...)
- *   2. NEXT_PUBLIC_ADDSEARCH_SITEKEY env var
- *   3. demo fallback
- */
-
 import { NextResponse } from 'next/server';
 
 const ADDSEARCH_API_BASE = 'https://api.addsearch.com/v2/indices';
@@ -20,17 +9,10 @@ export async function POST(request) {
     const { question, conversationId, siteKey: runtimeSiteKey } = body;
 
     if (!question || typeof question !== 'string') {
-      return NextResponse.json(
-        { error: 'Missing "question" field.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing "question" field.' }, { status: 400 });
     }
-
     if (!conversationId) {
-      return NextResponse.json(
-        { error: 'Missing "conversationId" — needed for refine-query.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing "conversationId" — needed for refine-query.' }, { status: 400 });
     }
 
     const siteKey = runtimeSiteKey || process.env.NEXT_PUBLIC_ADDSEARCH_SITEKEY || DEFAULT_SITE_KEY;
@@ -38,33 +20,18 @@ export async function POST(request) {
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        question: question,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('[Refine Query Proxy] ERROR:', response.status, errText);
-      return NextResponse.json(
-        { error: `AddSearch API returned ${response.status}`, details: errText },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: `AddSearch API returned ${response.status}`, details: errText }, { status: response.status });
     }
 
     const data = await response.json();
-
-    return NextResponse.json({
-      refinedQuery: data.refined_query || '',
-    });
+    return NextResponse.json({ refinedQuery: data.refined_query || '' });
   } catch (err) {
-    console.error('refineQuery proxy error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error.', details: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error.', details: err.message }, { status: 500 });
   }
 }

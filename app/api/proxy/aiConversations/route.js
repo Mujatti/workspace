@@ -1,17 +1,3 @@
-/**
- * app/api/proxy/aiConversations/route.js
- *
- * Proxy for AddSearch AI Conversations API.
- * Supports both streaming (SSE) and non-streaming modes.
- *
- * Query param ?stream=true enables SSE streaming.
- *
- * Site key resolution order:
- *   1. request body siteKey (runtime override, e.g. ?site_key=...)
- *   2. NEXT_PUBLIC_ADDSEARCH_SITEKEY env var
- *   3. demo fallback
- */
-
 import { NextResponse } from 'next/server';
 
 const ADDSEARCH_API_BASE = 'https://api.addsearch.com/v2/indices';
@@ -29,7 +15,6 @@ export async function POST(request) {
     }
 
     const siteKey = runtimeSiteKey || process.env.NEXT_PUBLIC_ADDSEARCH_SITEKEY || DEFAULT_SITE_KEY;
-
     let apiUrl = `${ADDSEARCH_API_BASE}/${siteKey}/conversations`;
     if (conversationId) apiUrl += `/${conversationId}`;
 
@@ -76,11 +61,14 @@ export async function POST(request) {
                 }
               }
             }
+
             if (buffer.trim().startsWith('data: ')) {
               controller.enqueue(encoder.encode(buffer.trim() + '\n\n'));
             }
           } catch (e) {
-            controller.enqueue(encoder.encode(`data: {"type":"error","message":"${e.message}"}\n\n`));
+            controller.enqueue(
+              encoder.encode(`data: {"type":"error","message":"${e.message}"}\n\n`)
+            );
           } finally {
             controller.close();
           }
@@ -91,7 +79,7 @@ export async function POST(request) {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+          Connection: 'keep-alive',
         },
       });
     }
@@ -102,11 +90,10 @@ export async function POST(request) {
       answer: inner.answer || '',
       conversationId: inner.conversation_id || inner.conversationId || conversationId || '',
       sources: Array.isArray(inner.sources)
-        ? inner.sources.map(s => ({ title: s.title || s.url || '', url: s.url || s.link || '' }))
+        ? inner.sources.map((s) => ({ title: s.title || s.url || '', url: s.url || s.link || '' }))
         : [],
     });
   } catch (err) {
-    console.error('aiConversations proxy error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

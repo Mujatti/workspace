@@ -78,7 +78,7 @@ var DEFAULTS = {
     searchPlaceholder: 'Ask a question or search by keyword...',
     searchButtonText: 'Search',
     headerSearchPlaceholder: 'Ask anything...',
-    aiAnswerLabel: 'AI Answer',
+    aiAnswerLabel: 'AI Conversations',
     aiAnswerStreaming: 'Streaming...',
     aiAnswerLoading: 'Generating answer...',
     diveButtonText: 'Dive Deeper →',
@@ -95,7 +95,7 @@ var DEFAULTS = {
     footerText: 'Powered by',
     footerBrand: 'AddSearch',
     footerBrandUrl: 'https://www.addsearch.com/',
-    footerTagline: '· AI Answers · AI Conversations',
+    footerTagline: '',
     sourcesLabel: '{count} sources',
   },
 

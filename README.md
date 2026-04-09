@@ -137,14 +137,3 @@ app/
 | Edit JSON + deploy | Admin UI writes to database |
 | `answerProvider: 'conversations'` | Add `'aiAnswers'` provider |
 | API route reads file | API route reads database |
-
-
-## URL override for index
-
-You can override the runtime AddSearch index without editing demo-session data:
-
-```
-/?site_key=YOUR_SITE_KEY
-```
-
-This override also flows through the AI conversation and refine-query proxies.

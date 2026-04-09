@@ -251,11 +251,7 @@ function AppWithConfig({ config, session }) {
 
       {/* ── Footer ── */}
       <footer className="px-footer">
-        <p>
-          {labels.footerText}{' '}
-          <a href={labels.footerBrandUrl} target="_blank" rel="noopener noreferrer">{labels.footerBrand}</a>
-          {' '}{labels.footerTagline}
-        </p>
+        <p><a href={labels.footerBrandUrl} target="_blank" rel="noopener noreferrer">Powered by AddSearch</a></p>
       </footer>
     </main>
   );
