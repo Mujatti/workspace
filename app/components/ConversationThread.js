@@ -6,6 +6,7 @@
 
 import { useEffect, useRef } from 'react';
 import MarkdownRenderer from './MarkdownRenderer';
+import SmoothStreamingText from './SmoothStreamingText';
 import LoadingDots from './LoadingDots';
 
 export default function ConversationThread({ messages, isLoading, isStreaming, streamingText, streamingLabel }) {
@@ -52,7 +53,7 @@ export default function ConversationThread({ messages, isLoading, isStreaming, s
           <div className="px-answer-label">
             <span className="px-streaming-badge">{streamingLabel || 'Streaming...'}</span>
           </div>
-          <MarkdownRenderer content={streamingText} />
+          <SmoothStreamingText content={streamingText} isStreaming={isStreaming} />
         </div>
       )}
 

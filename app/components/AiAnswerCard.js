@@ -5,6 +5,7 @@
 'use client';
 
 import MarkdownRenderer from './MarkdownRenderer';
+import SmoothStreamingText from './SmoothStreamingText';
 
 export default function AiAnswerCard({
   answer, sources, isStreaming,
@@ -20,7 +21,7 @@ export default function AiAnswerCard({
         {query && <> for: <strong>{query}</strong></>}
         {isStreaming && <span className="px-streaming-badge">{streamingLabel || 'Streaming...'}</span>}
       </div>
-      <MarkdownRenderer content={answer} />
+      {isStreaming ? <SmoothStreamingText content={answer} isStreaming={isStreaming} /> : <MarkdownRenderer content={answer} />}
       {!isStreaming && sources && sources.length > 0 && (
         <div className="px-sources">
           <p className="px-sources-label">{sourcesText}</p>
